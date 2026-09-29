@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ff9ec7" />
+  <title>fmd 生日快乐 · 20 岁</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 3D 画布 -->
+  <canvas id="scene"></canvas>
+
+  <!-- 天空柔光层 -->
+  <div class="sky-glow" aria-hidden="true"></div>
+
+  <!-- 第一人称驾驶舱（挡风框 + 暗角） -->
+  <div class="cockpit" id="cockpit" hidden aria-hidden="true">
+    <div class="cockpit-vignette"></div>
+    <div class="cockpit-canopy"></div>
+    <div class="cockpit-pillar cockpit-pillar-left"></div>
+    <div class="cockpit-pillar cockpit-pillar-right"></div>
+  </div>
+
+  <!-- ===== 顶部 HUD ===== -->
+  <header class="hud" id="hud" hidden>
+    <div class="hud-title">✈️ fmd 生日快乐</div>
+    <div class="hud-progress" role="progressbar" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" aria-label="已收集祝福">
+      <div class="hud-progress-bar" id="progressBar"></div>
+      <div class="hud-count"><span id="countNum">0</span><span class="hud-total"> / 20</span></div>
+    </div>
+    <div class="hud-tip" id="hudTip">自由飞行，飞到朋友身边收祝福</div>
+    <button class="sound-btn" id="soundBtn" aria-label="音乐开关" hidden>🔊</button>
+  </header>
+
+  <!-- 最近朋友方向箭头 -->
+  <div class="friend-arrow" id="friendArrow" hidden>▲</div>
+
+  <!-- ===== 启动屏 ===== -->
+  <section class="overlay start-overlay" id="startOverlay">
+    <div class="start-inner">
+      <p class="start-eyebrow">一份来自天空的心意</p>
+      <h1 class="start-title">fmd<br /><span>生日快乐</span></h1>
+      <p class="start-sub">有一架小飞机正贴着海岛地面低空飞行，载着<span class="hl">20 位朋友的祝福</span>。<br />自由驾驶它飞向散落在各处的每一位朋友，接住沿途的心意，<br />终点还有一份惊喜在等你。</p>
+      <button class="btn-primary" id="startBtn">启 程 ✈️</button>
+      <p class="start-hint">用鼠标 / 手指控制左右方向，或按 ← → 键转向 · 按 C 切换第一 / 第三人称</p>
+    </div>
+  </section>
+
+  <!-- ===== 祝福卡片弹层 ===== -->
+  <section class="blessing-card" id="blessingCard" aria-live="polite" hidden>
+    <div class="blessing-inner">
+      <div class="blessing-avatar" id="blessingAvatar">🎂</div>
+      <div class="blessing-name" id="blessingName">——</div>
+      <p class="blessing-message" id="blessingMessage"></p>
+      <div class="blessing-skip">点击任意处继续</div>
+    </div>
+  </section>
+
+  <!-- ===== 成功弹层 ===== -->
+  <section class="overlay success-overlay" id="successOverlay" hidden>
+    <div class="success-inner">
+      <p class="success-kicker">✨ 飞行成功 · 20 份祝福已送达 ✨</p>
+      <div class="banner" id="banner">
+        <h2 class="banner-line">fmd 生日快乐！</h2>
+        <h3 class="banner-line banner-sub">20 岁天天开心！</h3>
+      </div>
+      <div class="cake-note">🎂 这是一份只属于你的生日蛋糕</div>
+      <button class="btn-primary" id="replayBtn">再飞一次 ✈️</button>
+    </div>
+  </section>
+
+  <!-- JS -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

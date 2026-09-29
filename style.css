@@ -1,0 +1,431 @@
+/* ============ 基础与变量 ============ */
+:root {
+  --pink: #ff9ec7;
+  --pink-deep: #f06ea9;
+  --gold: #ffd98a;
+  --peach: #ffc9a9;
+  --lavender: #c9b6ff;
+  --ink: #5a2a55;
+  --ink-soft: #8a5a80;
+  --cream: #fff6f2;
+  --shadow: 0 12px 40px rgba(150, 60, 110, 0.25);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* 让 hidden 属性始终生效（覆盖各类 display:flex 规则） */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "ZCOOL KuaiLe", "KaiTi", "STKaiti", "Microsoft YaHei", system-ui, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, #9fd3ff 0%, #ffd3e8 42%, #ffe3c4 78%, #ffeecb 100%);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 天空柔光叠加层 */
+.sky-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,0.45), transparent 60%),
+    radial-gradient(80% 50% at 85% 15%, rgba(255,255,255,0.35), transparent 60%);
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+/* ============ 第一人称驾驶舱 ============ */
+.cockpit {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 暗角：让边缘沉下去，突出正前方视野 */
+.cockpit-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    135% 105% at 50% 44%,
+    transparent 58%,
+    rgba(40, 22, 38, 0.16) 78%,
+    rgba(24, 12, 26, 0.42) 100%
+  );
+}
+
+/* 挡风玻璃顶框：一条向上拱起的弧形上沿 */
+.cockpit-canopy {
+  position: absolute;
+  left: -6vw;
+  right: -6vw;
+  top: -2vh;
+  height: 26vh;
+  border-top: 14px solid rgba(36, 26, 34, 0.85);
+  border-radius: 50% 50% 8% 8% / 100% 100% 0 0;
+  box-shadow:
+    inset 0 -26px 40px -20px rgba(30, 18, 28, 0.5),
+    0 6px 26px rgba(30, 18, 28, 0.25);
+}
+
+/* 两侧 A 柱：向下收窄的斜柱 */
+.cockpit-pillar {
+  position: absolute;
+  top: -2vh;
+  height: 72vh;
+  width: 8vw;
+  background: linear-gradient(
+    180deg,
+    rgba(36, 26, 34, 0.9),
+    rgba(48, 34, 44, 0.78) 55%,
+    rgba(36, 26, 34, 0.92)
+  );
+}
+.cockpit-pillar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent 55%);
+}
+.cockpit-pillar-left {
+  left: -2vw;
+  transform: skewY(-9deg);
+  transform-origin: top;
+  clip-path: polygon(0 0, 100% 6%, 88% 100%, 0 100%);
+}
+.cockpit-pillar-right {
+  right: -2vw;
+  transform: skewY(9deg);
+  transform-origin: top;
+  clip-path: polygon(100% 0, 0 6%, 12% 100%, 100% 100%);
+}
+
+/* ============ HUD ============ */
+.hud {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  pointer-events: none;
+}
+
+.hud-title {
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(180, 60, 120, 0.5);
+  white-space: nowrap;
+}
+
+.hud-progress {
+  flex: 1;
+  max-width: 300px;
+  position: relative;
+  height: 26px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 999px;
+  box-shadow: inset 0 2px 6px rgba(180, 90, 140, 0.25);
+  overflow: hidden;
+}
+
+.hud-progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pink), var(--gold));
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hud-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+.hud-total { font-size: 11px; opacity: 0.7; }
+
+.hud-tip {
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(180, 60, 120, 0.5);
+  opacity: 0.9;
+}
+
+.sound-btn {
+  pointer-events: auto;
+  width: 38px; height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+.sound-btn:hover { transform: scale(1.1); }
+.sound-btn:active { transform: scale(0.95); }
+
+/* 最近朋友方向箭头 */
+.friend-arrow {
+  position: fixed;
+  left: 50%;
+  top: 68%;
+  z-index: 18;
+  pointer-events: none;
+  font-size: 22px;
+  color: rgba(255,255,255,0.72);
+  text-shadow: 0 0 12px rgba(150,190,255,0.5);
+  transform: translate(-50%, -50%);
+  animation: arrowPulse 1.6s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ============ 通用弹层 ============ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.start-overlay {
+  background: radial-gradient(120% 80% at 50% 30%, rgba(255,255,255,0.55), rgba(255,180,200,0.35) 60%, rgba(120,80,160,0.25));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.start-inner {
+  max-width: 560px;
+  animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.start-eyebrow {
+  letter-spacing: 0.35em;
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.start-title {
+  font-family: "Ma Shan Zheng", "KaiTi", "STKaiti", cursive;
+  font-size: 64px;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 6px 24px rgba(214, 60, 130, 0.55);
+  margin-bottom: 18px;
+}
+.start-title span {
+  font-size: 48px;
+  color: var(--ink);
+  text-shadow: 0 3px 12px rgba(255,255,255,0.7);
+}
+
+.start-sub {
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+  margin-bottom: 30px;
+}
+.hl {
+  color: var(--pink-deep);
+  font-weight: bold;
+}
+
+.btn-primary {
+  pointer-events: auto;
+  font-family: inherit;
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  padding: 14px 46px;
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--pink-deep), var(--pink));
+  box-shadow: 0 10px 30px rgba(214, 60, 130, 0.45);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(214, 60, 130, 0.55);
+}
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.start-hint {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  opacity: 0.75;
+}
+
+/* ============ 祝福卡片 ============ */
+.blessing-card {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: pointer;
+  background: rgba(90, 42, 85, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fadeIn 0.25s ease both;
+}
+
+.blessing-inner {
+  max-width: 420px;
+  width: 100%;
+  background: linear-gradient(180deg, #fffdfb, #fff2ec);
+  border-radius: 26px;
+  padding: 34px 30px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  animation: popIn 0.45s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+.blessing-avatar {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 14px;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.blessing-name {
+  font-size: 21px;
+  color: var(--pink-deep);
+  font-weight: bold;
+  margin-bottom: 14px;
+  letter-spacing: 0.05em;
+}
+
+.blessing-message {
+  font-family: "KaiTi", "STKaiti", "Microsoft YaHei", serif;
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--ink);
+  margin-bottom: 22px;
+}
+
+.blessing-skip {
+  font-size: 12px;
+  color: var(--ink-soft);
+  opacity: 0.6;
+}
+
+/* ============ 成功弹层 ============ */
+.success-overlay {
+  background: rgba(40, 20, 60, 0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.success-overlay[hidden] { display: none; }
+
+.success-inner {
+  animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.success-kicker {
+  color: #fff;
+  letter-spacing: 0.25em;
+  font-size: 14px;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.banner {
+  padding: 34px 46px;
+  margin-bottom: 26px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,240,225,0.9));
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  border: 3px solid rgba(255, 190, 130, 0.7);
+  position: relative;
+}
+
+.banner-line {
+  font-family: "Ma Shan Zheng", "KaiTi", "STKaiti", cursive;
+  font-size: 46px;
+  color: var(--ink);
+  line-height: 1.25;
+  animation: glowPulse 2.6s ease-in-out infinite;
+}
+.banner-sub {
+  font-size: 34px;
+  color: var(--pink-deep);
+}
+
+.cake-note {
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  margin-bottom: 28px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* ============ 动画 ============ */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 10px rgba(255, 190, 130, 0.2); }
+  50% { text-shadow: 0 0 26px rgba(255, 150, 180, 0.65); }
+}
+
+/* ============ 响应式 ============ */
+@media (max-width: 640px) {
+  .start-title { font-size: 52px; }
+  .start-title span { font-size: 40px; }
+  .start-sub { font-size: 14px; }
+  .banner-line { font-size: 34px; }
+  .banner-sub { font-size: 26px; }
+  .banner { padding: 26px 22px; }
+  .hud-tip { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
